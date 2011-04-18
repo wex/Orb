@@ -1,0 +1,40 @@
+#login-box {
+    width: 320px;
+    background: #000;
+    color: #fff;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 15px;
+}
+#login-box legend {
+    font-size: 20px;
+    color: #fff;
+    padding: 0 0 10px 0;
+}
+#login-box p {
+    padding: 5px 0;
+}
+#login-box label {
+    display: block;
+    clear: both;
+    padding: 5px 0;
+}
+#login-box input {
+    width: 310px;
+    border: none;
+    background: #fff;
+    padding: 5px;
+    color: #000;
+    font-size: 18px;
+}
+#login-box button {
+    width: 320px;
+    padding: 10px;
+    background: #fff;
+    border: none;
+    color: #000;
+    font-size: 18px;
+}
+#login-box p.error {
+    color: #f00;
+}

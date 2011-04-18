@@ -1,0 +1,117 @@
+/* General */
+body {
+    background: #fff;
+    color: #000;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+/* Navigation */
+nav {
+    position: relative;
+    padding-left: 32px;
+    background: #000 url(../img/logo.png) no-repeat 8px 50%;
+    height: 32px;
+}
+nav #app-version {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 32px;
+    height: 9px;
+    color: #fff;
+    font-size: 8px;
+    text-align: center;
+}
+nav ol {
+    display: block;
+    position: relative;
+    list-style: none;
+    height: 32px;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+}
+nav ol > li {
+    display: block;
+    float: left;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+nav ol > li:hover > a {
+    background-image: url(../img/icons/arrow_down.png);
+}
+nav ol > li:first-child > a {
+    border-left: 1px solid #fff;
+}
+nav ol > li > a {
+    display: block;
+    float: left;
+    font-size: 12px;
+    line-height: 32px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    padding: 0 30px 0 6px;
+    margin: 0;
+    border-right: 1px solid #fff;
+    background: transparent url(../img/icons/arrow_up.png) no-repeat 100% 50%;
+}
+nav ul {
+    display: none;
+    position: absolute;
+    list-style: none;
+    top: 32px;
+    left: 0;
+    right: 0;
+    background: #000;
+    border-top: 1px solid #fff;
+}
+nav ul > li {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+    border-bottom: 1px solid #fff;
+}
+nav ul > li > a {
+    display: block;
+    border-right: 1px solid #fff;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    line-height: 24px;
+    text-indent: 16px;
+}
+nav a:hover {
+    color: #cf0;
+}
+nav ol > li#logout {
+    float: right;
+}
+nav ol > li#logout > a {
+    border-right: none;
+    border-left: 1px solid #fff;
+    background: transparent url(../img/icons/arrow_right.png) no-repeat 100% 50%;
+}
+/* Content */
+#main {
+    padding: 10px;
+}
+#main a {
+    color: #000;
+}
+#main a:hover {
+    color: #690;
+}
+#main h1 {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+#main .orb-jstree {
+    width: 320px;
+    height: 240px;
+    background: red;
+}
