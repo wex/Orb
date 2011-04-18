@@ -1,0 +1,12 @@
+Orb MVC
+--------------------------------------------------------------------------------
+
+1.0 Installation
+---
+Symlink all from app/media to public
+    cd public
+    ln -s ../app/media/* .
+
+2.0 Warranty
+---
+Always void. No guarantees given.
