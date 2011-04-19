@@ -5,12 +5,15 @@
  * @version 1.00
  */
 
+require_once 'Functions.php';
+
 class Application
 {
     static $_instance   = false;
     static $db          = false;
     static $config      = false;
     static $base        = false;
+    static $uri         = false;
 
     private $controller = false;
     private $action     = false;
@@ -60,7 +63,7 @@ class Application
         $this::$config = new Zend_Config_Yaml($file, APPLICATION_MODE);
         $this::$db = Zend_Db::factory($this::$config->db);
         $this::$base = (($_SERVER['SERVER_PORT'] == 445) ? 'https://' : 'http://') . $_SERVER['SERVER_NAME'] . str_replace('index.php', '', str_replace($_SERVER['DOCUMENT_ROOT'], '', $_SERVER['SCRIPT_FILENAME']));
-
+        
         $sessionName = 'orbsession';
         if (isset($this::$config->session->name))
             $sessionName = $this::$config->session->name;
@@ -76,7 +79,18 @@ class Application
      */
     private function route()
     {
-        $request = explode('/', substr($_SERVER['REQUEST_URI'], 1), 3);
+        $request_uri = $_SERVER['REQUEST_URI'];
+        
+        if (strstr($request_uri, '?'))
+            list($request_uri, $request_params) = explode('?', $_SERVER['REQUEST_URI'], 2);
+        
+        if (strstr($request_uri, '#'))
+            list($request_uri, $request_jump) = explode('#', $request_uri);
+        
+        $this::$uri = substr($request_uri, 1);
+        
+        $request = explode('/', substr($request_uri, 1), 3);
+        
         $this->controller   = (isset($request[0]) && strlen($request[0])) ? $request[0] : 'index';
         $this->action       = (isset($request[1]) && strlen($request[1])) ? $request[1] : 'index';
         if (isset($request[2]) && strlen($request[2])) {

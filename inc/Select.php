@@ -18,6 +18,11 @@ class Select extends Zend_Db_Select implements Iterator, Countable
     {
         return parent::where($q, $v, $t);
     }
+    
+    public function paginate($limit = 20, $var = 'p')
+    {
+        return new Paginator($this, $limit, $var);
+    }
 
     public function count()
     {
