@@ -29,6 +29,14 @@ class Application
         spl_autoload_register('Application::autoload');
         set_error_handler('Application::error');
         set_exception_handler('Trap::handle');
+        
+        if (file_exists(APPLICATION_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Orb.php'))
+            include APPLICATION_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Orb.php';
+        
+        if (class_exists('Orb', false)) {
+            $orb = new Orb;
+        }        
+        
         $this->route();        
         $this->configure();
         
@@ -37,6 +45,7 @@ class Application
 
         if (!$controller->callable($this->action)) throw new Exception(sprintf('Invalid action (%s)', $this->action));
         $result = $controller->call($this->action);
+        if ($result === false) throw new Exception('Not allowed.');
         
         $this->template = $controller::$layout;
         if (is_array($result) && isset($result['template']))

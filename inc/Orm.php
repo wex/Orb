@@ -336,7 +336,7 @@ abstract class Orm
     
     public static function get($id)
     {
-        return self::select()->where(array('id' => $id))->getOne();
+        return self::select()->where('id = ?', $id)->getOne();
     }
     
     public static function find($data = array())
