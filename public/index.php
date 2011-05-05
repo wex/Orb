@@ -10,10 +10,10 @@ define('APPLICATION_MODE', (in_array(getenv('APPLICATION_MODE'), array('developm
 
 // Set include path
 set_include_path(implode(PATH_SEPARATOR, array(
+    realpath(APPLICATION_PATH . '/app/views/include/'),
+    realpath(APPLICATION_PATH . '/app/models/'),
     realpath(APPLICATION_PATH . '/inc/'),
     realpath(APPLICATION_PATH . '/ext/'),
-    realpath(APPLICATION_PATH . '/app/models/'),
-    realpath(APPLICATION_PATH . '/app/views/include/'),
     get_include_path()
 )));
 

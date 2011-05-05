@@ -130,6 +130,17 @@ class Application
         exit;
     }
     
+    public static function message($text = false, $type = 'error')
+    {
+        if ($text === false && isset($_SESSION['orb']['__message'])) {
+            $html = '<div id="orb-message" class="'. $_SESSION['orb']['__message'][1] .'">'. $_SESSION['orb']['__message'][0] .'</div>';
+            unset($_SESSION['orb']['__message']);
+            return $html;
+        } else if ($text !== false) {
+            $_SESSION['orb']['__message'] = array($text, $type);
+        }     
+    }
+    
     /**
      * Errors to Exceptions
      */

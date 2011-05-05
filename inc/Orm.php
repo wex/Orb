@@ -46,10 +46,12 @@ abstract class Orm
             if (array_key_exists('thru', $rel)) {               
                 // Many-to-many
                 $inherit = array_key_exists('inherit', $rel['thru']) ? $rel['thru']['inherit'] : array();
-                $sql = $db->select()
-                          ->from(array('m' => $rel['table']), '*')
-                          ->join(array('l' => $rel['thru']['table']), 'm.id = l.' . $db->quoteIdentifier($rel['thru']['key']), $inherit)
-                          ->where('l.' . $db->quoteIdentifier($rel['key']) . ' = ?', $this->_get('id'));
+                $sql = $object::select()
+                              ->reset('from')
+                              ->reset('columns')
+                              ->from(array('m' => $rel['table']), '*')
+                              ->join(array('l' => $rel['thru']['table']), 'm.id = l.' . $db->quoteIdentifier($rel['thru']['key']), $inherit)
+                              ->where('l.' . $db->quoteIdentifier($rel['key']) . ' = ?', $this->_get('id'));
                 
                 if (array_key_exists('order', $rel['thru']))
                     $sql->order('l.' . $rel['thru']['order']);
@@ -69,16 +71,15 @@ abstract class Orm
                     }
                 }
                 
-                $records = array();
-                foreach ($db->fetchAll($sql) as $row)
-                    $records[] = new $object($row, true);
-                
-                return $records;
+                return $sql;
                 
             } else {                
                 // One-to-many
-                $sql = $db->select()
-                          ->from(array('m' => $rel['table']), '*');
+                $sql = $object::select()
+                              ->reset('from')
+                              ->reset('columns')
+                              ->from(array('m' => $rel['table']), '*')
+                              ->where('m.' . $db->quoteIdentifier($rel['key']) . ' = ?', $this->_get('id'));
                 
                 if (array_key_exists('order', $rel))
                     $sql->order('m.' . $rel['order']);
@@ -89,11 +90,7 @@ abstract class Orm
                     }
                 }
                 
-                $records = array();
-                foreach ($db->fetchAll($sql) as $row)
-                    $records[] = new $object($row, true);
-                
-                return $records;                
+                return $sql;
             }
             
         }
@@ -107,8 +104,8 @@ abstract class Orm
     
     public function __get($key)
     {
-        if (array_key_exists($key, $this::$has_many)) {            
-            if ($this->_get('id') && !array_key_exists($key, $this->data))
+        if (array_key_exists($key, $this::$has_many)) {
+            if (($this->_get('id') && !array_key_exists($key, $this->data)) || in_array($key, $this->dirty))
                 $this->data[$key] = $this->_get($key);
             
             return $this->data[$key];            
