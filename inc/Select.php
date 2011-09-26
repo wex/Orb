@@ -80,7 +80,7 @@ class Select extends Zend_Db_Select implements Iterator, Countable
 
     public function valid()
     {
-        if ($this->key === false)
+        if ($this->key === false || $this->data === false)
             return false;
         
         return true;

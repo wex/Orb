@@ -9,10 +9,17 @@
 abstract class Controller
 {
     /**
+     * JSON array
+     * * = all
+     * @var <array>     Require roles
+     */
+    static $json = array();
+
+    /**
      * Roles array
      * * = all
      * @ = logged
-     * string = group     * 
+     * string = group
      * @var <array>     Require roles
      */
     static $roles = array('*' => array('*'));
@@ -107,7 +114,13 @@ abstract class Controller
         /**
          * @todo    Implement "rolegroups", not needed yet.
          */
-        if ($access === false) throw new Exception('Access denied', 405);
+        if ($access === false) {
+            if (method_exists('Orb', 'deny')) {
+                Orb::deny();
+            } else {
+                throw new Exception('Access denied', 405);
+            }
+        }
         
         $method = self::toAction($name);
         return $this->$method();

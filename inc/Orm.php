@@ -110,10 +110,10 @@ abstract class Orm
             
             return $this->data[$key];            
         }
-        
+
         $method = sprintf('get%s', ucfirst(strtolower($key)));
         $value = $this->_get($key);
-           
+
         if (method_exists($this, $method)) $value = $this->$method($value);
         
         return $value;

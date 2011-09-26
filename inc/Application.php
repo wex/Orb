@@ -15,8 +15,10 @@ class Application
     static $base        = false;
     static $uri         = false;
 
-    private $controller = false;
-    private $action     = false;
+    static $controller = false;
+    static $action     = false;
+
+    private $format     = false;
 
     private $template   = false;
 
@@ -40,20 +42,32 @@ class Application
         $this->route();        
         $this->configure();
         
-        if (!Controller::exists($this->controller)) throw new Exception(sprintf('Invalid controller (%s)', $this->controller));
-        $controller = Controller::factory($this->controller, $this);
+        if (!Controller::exists(Application::$controller)) throw new Exception(sprintf('Invalid controller (%s)', Application::$controller));
+        $controller = Controller::factory(Application::$controller, $this);
 
-        if (!$controller->callable($this->action)) throw new Exception(sprintf('Invalid action (%s)', $this->action));
-        $result = $controller->call($this->action);
+        if (!$controller->callable(Application::$action)) throw new Exception(sprintf('Invalid action (%s)', Application::$action));
+        $result = $controller->call(Application::$action);
         if ($result === false) throw new Exception('Not allowed.');
-        
+
+        if ($this->format !== false) {
+            switch ($this->format) {
+                case 'json':
+                    if ($controller::$json != '*' && !in_array('*', $controller::$json) && !in_array($this->action, $controller::$json)) throw new Exception("JSON not allowed.", 401);
+                    echo Template_Json::render($result);
+                    return $this;
+                default:
+                    throw new Exception("Unknown format '{$this->format}'");
+                    break;
+            }
+        }
+
         $this->template = $controller::$layout;
         if (is_array($result) && isset($result['template']))
             $this->template = $result['template'];
         
         if (!Template::exists($this->template)) throw new Exception(sprintf('Invalid template (%s)', $this->template));
         
-        $this->view = $this->controller . '/' . $this->action;
+        $this->view = Application::$controller . '/' . Application::$action;
         if (!View::exists($this->view)) throw new Exception(sprintf('Invalid view (%s)', $this->view));
         
         $html = Template::load($this->template, array('view' => View::load($this->view, $result)));
@@ -89,19 +103,27 @@ class Application
     private function route()
     {
         $request_uri = $_SERVER['REQUEST_URI'];
-        
+        $request_format = false;
+
         if (strstr($request_uri, '?'))
             list($request_uri, $request_params) = explode('?', $_SERVER['REQUEST_URI'], 2);
         
         if (strstr($request_uri, '#'))
             list($request_uri, $request_jump) = explode('#', $request_uri);
-        
-        $this::$uri = substr($request_uri, 1);
+
+        if (strstr($request_uri, '.')) {
+            $parts = explode('.', $request_uri);
+            $request_uri    = implode('.', array_slice($parts, 0, -1));
+            $request_format = strtolower(implode('.', array_slice($parts, -1)));
+        }
+
+        $this::$uri = trim($request_uri, '/');
         
         $request = explode('/', substr($request_uri, 1), 3);
         
-        $this->controller   = (isset($request[0]) && strlen($request[0])) ? $request[0] : 'index';
-        $this->action       = (isset($request[1]) && strlen($request[1])) ? $request[1] : 'index';
+        $this->format               = (in_array($request_format, array('json'))) ? $request_format : false;
+        Application::$controller    = (isset($request[0]) && strlen($request[0])) ? $request[0] : 'index';
+        Application::$action        = (isset($request[1]) && strlen($request[1])) ? $request[1] : 'index';
         if (isset($request[2]) && strlen($request[2])) {
             if (substr($request[2], -1) != '/') $request[2] .= '/';
             $params = explode('/', $request[2]);
@@ -133,7 +155,7 @@ class Application
     public static function message($text = false, $type = 'error')
     {
         if ($text === false && isset($_SESSION['orb']['__message'])) {
-            $html = '<div id="orb-message" class="'. $_SESSION['orb']['__message'][1] .'">'. $_SESSION['orb']['__message'][0] .'</div>';
+            $html = '<div id="orb-message" class="'. $_SESSION['orb']['__message'][1] .'">'. $_SESSION['orb']['__message'][0] .'</div><script>$(function() { $("#orb-message").delay(2000).fadeOut(2000); });</script>';
             unset($_SESSION['orb']['__message']);
             return $html;
         } else if ($text !== false) {
@@ -154,7 +176,7 @@ class Application
      */
     public static function autoload($name)
     {
-        include_once str_replace(array('\\', '_'), array('/', '/'), $name) . '.php';
+        include_once str_replace(array('\\', '_'), array(DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR), $name) . '.php';
     }
     
 }
